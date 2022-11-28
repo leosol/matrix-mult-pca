@@ -7,13 +7,17 @@ import org.junit.Test;
 
 import br.unb.cic.algorithms.matrices.impl.RecursiveWithArrayCopy;
 import br.unb.cic.algorithms.matrices.impl.RecursiveWithIndexMath;
+import br.unb.cic.algorithms.matrices.impl.StrassenOptimized;
 import br.unb.cic.algorithms.matrices.impl.StrassenWithArrayCopy;
+import br.unb.cic.algorithms.matrices.impl.StrassenWithIndexMath;
 import br.unb.cic.algorithms.util.Matrices;
 
 public class TestSuite {
 	MatrixProduct recursiveWithArrayCopy = new RecursiveWithArrayCopy();
 	MatrixProduct strassensWithArrayCopy = new StrassenWithArrayCopy();
 	MatrixProduct recursiveWithIndexMath = new RecursiveWithIndexMath();
+	MatrixProduct strassenWithIndexMath = new StrassenWithIndexMath();
+	MatrixProduct strassenOptimized = new StrassenOptimized();
 	
 	@Test
 	public void testRecursiveMultiply2x2Matrix() {
@@ -38,16 +42,22 @@ public class TestSuite {
 		
 		int[][] res3 = recursiveWithIndexMath.multiply(A, B);
 		Assert.assertTrue(Matrices.isEqual(C, res3));
+		
+		int[][] res4 = strassenWithIndexMath.multiply(A, B);
+		Assert.assertTrue(Matrices.isEqual(C, res4));
+		
+		int[][] res5 = strassenOptimized.multiply(A, B);
+		Assert.assertTrue(Matrices.isEqual(C, res5));
 	}
 	
 	@Test
 	public void testRecursiveMultiply5x5Matrix() {
-		int matrixSize = 2<<3;
+		int matrixSize = 2<<5;
 		int[][] A = new int[matrixSize][matrixSize];
 		int[][] B = new int[matrixSize][matrixSize];
 		for(int y=0;y<A.length;y++) {
 			for(int x=0; x<A[0].length;x++) {
-				A[y][x] = Integer.parseInt(y+""+x);
+				A[y][x] = (int)(Math.random()*1000);
 				B[y][x] = (int)(Math.random()*1000);
  			}
 		}
@@ -55,10 +65,14 @@ public class TestSuite {
 		int[][] CbyRecursiveMult = recursiveWithArrayCopy.multiply(A, B);
 		int[][] CbyStrassensMult = strassensWithArrayCopy.multiply(A, B);
 		int[][] CbyRecursiveIMath= recursiveWithIndexMath.multiply(A, B);
+		int[][] CbyStrassenWithIMath = strassenWithIndexMath.multiply(A, B);
+		int[][] CbyStrassenOptimized = strassenOptimized.multiply(A, B);
 		
 		Matrices.isEqual(CbyRegularMult, CbyRecursiveMult);
 		Matrices.isEqual(CbyRegularMult, CbyStrassensMult);
 		Matrices.isEqual(CbyRegularMult, CbyRecursiveIMath);
+		Matrices.isEqual(CbyRegularMult, CbyStrassenWithIMath);
+		Matrices.isEqual(CbyRegularMult, CbyStrassenOptimized);
 	}
 	
 	@Test

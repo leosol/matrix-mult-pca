@@ -10,16 +10,18 @@ import br.unb.cic.algorithms.matrices.impl.RecursiveWithIndexMath;
 import br.unb.cic.algorithms.matrices.impl.StandardProduct;
 import br.unb.cic.algorithms.matrices.impl.StrassenOptimized;
 import br.unb.cic.algorithms.matrices.impl.StrassenWithArrayCopy;
+import br.unb.cic.algorithms.matrices.impl.StrassenWithIndexMath;
 
 public class Main {
 
 	public static void main(String[] args) throws IOException {
 
-		Benchmark benchmark = new Benchmark(1, 8);
+		Benchmark benchmark = new Benchmark(3, 13);
 		benchmark.addAlgorithm("Standard Product", new StandardProduct());
 		//benchmark.addAlgorithm("Recursive Array Copy", new RecursiveWithArrayCopy());
 		benchmark.addAlgorithm("Recursive Indexed", new RecursiveWithIndexMath());
 		//benchmark.addAlgorithm("Strassen Array Copy", new StrassenWithArrayCopy());
+		//benchmark.addAlgorithm("Strassen Indexed", new StrassenWithIndexMath());
 		benchmark.addAlgorithm("Strassen Optimized", new StrassenOptimized());
 		benchmark.buildRandomTestData();
 		benchmark.run();

@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,13 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import br.unb.cic.algorithms.Benchmark.BenchmarkResult;
+import br.unb.cic.algorithms.matrices.MatrixProduct;
+import br.unb.cic.algorithms.matrices.impl.RecursiveWithArrayCopy;
+import br.unb.cic.algorithms.matrices.impl.RecursiveWithIndexMath;
+import br.unb.cic.algorithms.matrices.impl.StandardProduct;
+import br.unb.cic.algorithms.matrices.impl.StrassenOptimized;
+import br.unb.cic.algorithms.matrices.impl.StrassenWithArrayCopy;
+import br.unb.cic.algorithms.matrices.impl.StrassenWithIndexMath;
 
 public class BenchmarkChart extends JFrame {
 
@@ -40,6 +48,7 @@ public class BenchmarkChart extends JFrame {
 	private List<BenchmarkResult> benchmarkResults;
 	private int lowestN = Integer.MAX_VALUE;
 	private int highestN = Integer.MIN_VALUE;
+	private List<MatrixProduct> matrixProducts = new LinkedList<MatrixProduct>();
 
 	public BenchmarkChart(int mode, boolean logScale, boolean referenceScale, List<BenchmarkResult> results) {
 		this.mode = mode;
@@ -53,9 +62,7 @@ public class BenchmarkChart extends JFrame {
 		XYDataset dataset = createDataset();
 		JFreeChart chart = createChart(dataset);
 		try {
-			ChartUtils.saveChartAsPNG(new File(
-					"C:\\Users\\leoso\\Google Drive\\1.Leandro\\2.Estudos\\Mestrado\\Unb Especial 2022-3\\Trabalho 1\\"+getPngName()),
-					chart, 900, 800);
+			ChartUtils.saveChartAsPNG(new File("..\\..\\docs\\pngs\\" + getPngName()), chart, 900, 800);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +89,7 @@ public class BenchmarkChart extends JFrame {
 			throw new IllegalStateException("Unrecognized mode");
 		}
 	}
-	
+
 	private String getPngName() {
 		String modeStr = "";
 		switch (this.mode) {
@@ -99,7 +106,7 @@ public class BenchmarkChart extends JFrame {
 			throw new IllegalStateException("Unrecognized mode");
 		}
 		String optionsStr = "LOG-" + this.logScale + "_FACTOR_STD-" + this.referenceScale;
-		String pngName = "From_"+this.lowestN+"_to_"+this.highestN+"_"+modeStr+"_"+optionsStr+".png";
+		String pngName = "From_" + this.lowestN + "_to_" + this.highestN + "_" + modeStr + "_" + optionsStr + ".png";
 		return pngName;
 	}
 
@@ -124,6 +131,7 @@ public class BenchmarkChart extends JFrame {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		Map<String, XYSeries> namedSeries = new LinkedHashMap<String, XYSeries>();
 		for (BenchmarkResult benchmarkResult : benchmarkResults) {
+			this.matrixProducts.add(benchmarkResult.getAlgorithm());
 			if (lowestN > benchmarkResult.getN()) {
 				lowestN = benchmarkResult.getN();
 			}
@@ -154,6 +162,38 @@ public class BenchmarkChart extends JFrame {
 		return dataset;
 	}
 
+	private Color[] getColors() {
+		Color[] colors = new Color[this.matrixProducts.size()];
+		int i = 0;
+		for (MatrixProduct algorithm : this.matrixProducts) {
+			if (algorithm instanceof StandardProduct) {
+				colors[i] = Color.RED;
+				i++;
+			}
+			if (algorithm instanceof RecursiveWithArrayCopy) {
+				colors[i] = Color.BLUE;
+				i++;
+			}
+			if (algorithm instanceof RecursiveWithIndexMath) {
+				colors[i] = Color.decode("#887CAF");
+				i++;
+			}
+			if (algorithm instanceof StrassenWithArrayCopy) {
+				colors[i] = Color.GREEN;
+				i++;
+			}
+			if (algorithm instanceof StrassenWithIndexMath) {
+				colors[i] = Color.decode("#88CC88");
+				i++;
+			}
+			if (algorithm instanceof StrassenOptimized) {
+				colors[i] = Color.BLACK;
+				i++;
+			}
+		}
+		return colors;
+	}
+
 	private JFreeChart createChart(final XYDataset dataset) {
 
 		JFreeChart chart = ChartFactory.createXYLineChart(getChartTitle(), getXChartTitle(), getYChartTitle(), dataset,
@@ -163,16 +203,11 @@ public class BenchmarkChart extends JFrame {
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 
-		renderer.setSeriesPaint(0, Color.RED);
-		renderer.setSeriesStroke(0, new BasicStroke(2.0f));
-		renderer.setSeriesPaint(1, Color.BLUE);
-		renderer.setSeriesStroke(1, new BasicStroke(2.0f));
-		renderer.setSeriesPaint(2, Color.GREEN);
-		renderer.setSeriesStroke(2, new BasicStroke(2.0f));
-		renderer.setSeriesPaint(3, Color.DARK_GRAY);
-		renderer.setSeriesStroke(3, new BasicStroke(2.0f));
-		renderer.setSeriesPaint(4, Color.MAGENTA);
-		renderer.setSeriesStroke(4, new BasicStroke(2.0f));
+		Color[] colors = getColors();
+		for (int i = 0; i < colors.length; i++) {
+			renderer.setSeriesPaint(i, colors[i]);
+			renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+		}
 
 		plot.setRenderer(renderer);
 		plot.setBackgroundPaint(Color.white);

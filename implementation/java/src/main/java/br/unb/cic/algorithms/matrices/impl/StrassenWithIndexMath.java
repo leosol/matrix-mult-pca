@@ -5,14 +5,14 @@ import br.unb.cic.algorithms.matrices.Metrics;
 import br.unb.cic.algorithms.util.Matrices;
 import br.unb.cic.algorithms.util.Matrices.MatrixDivision;
 
-public class StrassenOptimized implements MatrixProduct {
+public class StrassenWithIndexMath implements MatrixProduct {
 	
-private Metrics metrics;
+	private Metrics metrics;
 	
-	public StrassenOptimized() {
+	public StrassenWithIndexMath() {
 		this.metrics = new Metrics();
 	}
-
+	
 	@Override
 	public int[][] multiply(int[][] A, int[][] B) {
 		// preconditions
@@ -30,8 +30,8 @@ private Metrics metrics;
 
 	private void imultiply(int[][] A, int[][] B, int[][] C, int Ay, int Ax, int By, int Bx, int Cy, int Cx, int n) {
 		metrics.incRecursive();
-		if (n <= (2<<8)) {
-			Matrices.imultiply(A, B, C,Ay, Ax, By, Bx, Cy, Cx, n);
+		if (n == 1) {
+			C[Cy][Cx] = C[Cy][Cx] + A[Ay][Ax] * B[By][Bx];
 		} else {
 			MatrixDivision divA = Matrices.splitIn4Indexes(Ay, Ax, n);
 			MatrixDivision divB = Matrices.splitIn4Indexes(By, Bx, n);

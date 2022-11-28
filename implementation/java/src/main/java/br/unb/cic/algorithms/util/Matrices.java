@@ -141,10 +141,13 @@ public class Matrices {
 		if (A.length != B.length) {
 			throw new IllegalArgumentException("A and B should have the same size");
 		}
-
 		int n = A.length;
-
 		int[][] C = new int[n][n];
+		imultiply(A, B, C, n);
+		return C;
+	}
+
+	public static void imultiply(int[][] A, int[][] B, int[][] C, int n) {
 		// see page 75
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
@@ -153,7 +156,18 @@ public class Matrices {
 				}
 			}
 		}
-		return C;
+	}
+	
+	public static void imultiply(int[][] A, int[][] B, int[][] C, int Ay, int Ax, int By, int Bx, int Cy, int Cx,
+			int n) {
+		// see page 75
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				for (int k = 0; k < n; k++) {
+					C[i + Cy][j + Cx] = C[i + Cy][j + Cx] + A[i + Ay][k + Ax] * B[k + By][j + Bx];
+				}
+			}
+		}
 	}
 
 	public static int[][] scalarMultiply(int m, int[][] A) {
@@ -166,6 +180,12 @@ public class Matrices {
 		return C;
 	}
 
+	public static int[][] iadd(int[][] A, int[][] B, int Ay, int Ax, int By, int Bx, int n) {
+		int[][] out = new int[n][n];
+		iadd(A, B, out, Ay, Ax, By, Bx, 0, 0, n);
+		return out;
+	}
+
 	public static void iadd(int[][] A, int[][] B, int[][] C, int Ay, int Ax, int By, int Bx, int Cy, int Cx, int n) {
 		for (int y = 0; y < n; y++) {
 			for (int x = 0; x < n; x++) {
@@ -173,7 +193,13 @@ public class Matrices {
 			}
 		}
 	}
-	
+
+	public static int[][] isub(int[][] A, int[][] B, int Ay, int Ax, int By, int Bx, int n) {
+		int[][] out = new int[n][n];
+		isub(A, B, out, Ay, Ax, By, Bx, 0, 0, n);
+		return out;
+	}
+
 	public static void isub(int[][] A, int[][] B, int[][] C, int Ay, int Ax, int By, int Bx, int Cy, int Cx, int n) {
 		for (int y = 0; y < n; y++) {
 			for (int x = 0; x < n; x++) {
